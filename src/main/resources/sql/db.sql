@@ -6,19 +6,19 @@ DROP TABLE IF EXISTS users;
 
 CREATE TABLE users
 (
-    id       INT         NOT NULL AUTO_INCREMENT,
-    username VARCHAR(45) NOT NULL,
+    id       INT          NOT NULL AUTO_INCREMENT,
+    email    VARCHAR(45)  NOT NULL,
     password VARCHAR(250) NOT NULL,
-    enabled  INT         NOT NULL,
+    role     VARCHAR(45)  NOT NULL,
     PRIMARY KEY (id)
 );
 
 DROP TABLE IF EXISTS authorities;
 
-CREATE TABLE authorities
-(
-    id        INT         NOT NULL AUTO_INCREMENT,
-    username  VARCHAR(45) NOT NULL,
-    authority VARCHAR(45) NOT NULL,
-    PRIMARY KEY (id)
-);
+# CREATE TABLE authorities
+# (
+#     id        INT         NOT NULL AUTO_INCREMENT,
+#     username  VARCHAR(45) NOT NULL,
+#     authority VARCHAR(45) NOT NULL,
+#     PRIMARY KEY (id)
+# );
