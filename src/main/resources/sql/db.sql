@@ -2,9 +2,10 @@ CREATE DATABASE IF NOT EXISTS easybank;
 
 USE easybank;
 
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS customer;
+DROP TABLE IF EXISTS customers;
 
-CREATE TABLE users
+CREATE TABLE customers
 (
     id       INT          NOT NULL AUTO_INCREMENT,
     email    VARCHAR(45)  NOT NULL,
