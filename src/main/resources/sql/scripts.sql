@@ -1,12 +1,14 @@
+drop database if exists eazybank;
+
 create database eazybank;
 
 use eazybank;
 
 drop table if exists `users`;
 drop table  if exists `authorities`;
-drop table if exists `customer`;
+drop table if exists `customers`;
 
-CREATE TABLE `customer` (
+CREATE TABLE `customers` (
   `customer_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
@@ -17,7 +19,7 @@ CREATE TABLE `customer` (
   PRIMARY KEY (`customer_id`)
 );
 
-INSERT INTO `customer` (`name`,`email`,`mobile_number`, `pwd`, `role`,`create_dt`)
+INSERT INTO `customers` (`name`,`email`,`mobile_number`, `pwd`, `role`,`create_dt`)
  VALUES ('Happy','happy@example.com','9876548337', '$2y$12$oRRbkNfwuR8ug4MlzH5FOeui.//1mkd.RsOAJMbykTSupVy.x/vb2', 'admin',CURDATE());
 
 CREATE TABLE `accounts` (
@@ -28,7 +30,7 @@ CREATE TABLE `accounts` (
   `create_dt` date DEFAULT NULL,
   PRIMARY KEY (`account_number`),
   KEY `customer_id` (`customer_id`),
-  CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE
+  CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE
 );
 
 INSERT INTO `accounts` (`customer_id`, `account_number`, `account_type`, `branch_address`, `create_dt`)
@@ -48,7 +50,7 @@ CREATE TABLE `account_transactions` (
   KEY `customer_id` (`customer_id`),
   KEY `account_number` (`account_number`),
   CONSTRAINT `accounts_ibfk_2` FOREIGN KEY (`account_number`) REFERENCES `accounts` (`account_number`) ON DELETE CASCADE,
-  CONSTRAINT `acct_user_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE
+  CONSTRAINT `acct_user_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE
 );
 
 
@@ -83,7 +85,7 @@ CREATE TABLE `loans` (
   `create_dt` date DEFAULT NULL,
   PRIMARY KEY (`loan_number`),
   KEY `customer_id` (`customer_id`),
-  CONSTRAINT `loan_customer_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE
+  CONSTRAINT `loan_customer_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE
 );
 
 INSERT INTO `loans` ( `customer_id`, `start_dt`, `loan_type`, `total_loan`, `amount_paid`, `outstanding_amount`, `create_dt`)
@@ -109,7 +111,7 @@ CREATE TABLE `cards` (
   `create_dt` date DEFAULT NULL,
   PRIMARY KEY (`card_id`),
   KEY `customer_id` (`customer_id`),
-  CONSTRAINT `card_customer_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE
+  CONSTRAINT `card_customer_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE
 );
 
 INSERT INTO `cards` (`card_number`, `customer_id`, `card_type`, `total_limit`, `amount_used`, `available_amount`, `create_dt`)
