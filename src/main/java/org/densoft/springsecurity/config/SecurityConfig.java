@@ -20,7 +20,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(registry -> registry
-                .requestMatchers("/myAccount", "/myBalance", "/myLoans", "/myCards").authenticated()
+                .requestMatchers("/myAccount", "/myBalance", "/myLoans", "/myCards","/user").authenticated()
                 .requestMatchers("/notices", "/contact","/register").permitAll()
         );
         http.csrf(AbstractHttpConfigurer::disable);

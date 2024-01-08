@@ -29,7 +29,7 @@ public class PwdAuthenticationProvider implements AuthenticationProvider {
         String password = authentication.getCredentials().toString();
 
         return customerRepository.findByEmail(username).map(customer -> {
-            if (!passwordEncoder.matches(password, customer.getPassword()))
+            if (!passwordEncoder.matches(password, customer.getPwd()))
                 throw new BadCredentialsException("Invalid username or password");
 
             return new UsernamePasswordAuthenticationToken(username, password, Collections.singleton(new SimpleGrantedAuthority(customer.getRole())));

@@ -1,6 +1,8 @@
 package org.densoft.springsecurity.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,13 +12,28 @@ import java.util.Collections;
 
 @Entity
 @Table(name = "customers")
-public class Customer implements UserDetails {
+public class Customer {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.AUTO,generator="native")
+    @GenericGenerator(name = "native",strategy = "native")
+    @Column(name = "customer_id")
     private int id;
+
+    private String name;
+
     private String email;
-    private String password;
+
+    @Column(name = "mobile_number")
+    private String mobileNumber;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String pwd;
+
     private String role;
+
+    @Column(name = "create_dt")
+    private String createDt;
 
     public int getId() {
         return id;
@@ -24,6 +41,14 @@ public class Customer implements UserDetails {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -34,42 +59,20 @@ public class Customer implements UserDetails {
         this.email = email;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(role));
+    public String getMobileNumber() {
+        return mobileNumber;
     }
 
-    public String getPassword() {
-        return password;
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
     }
 
-    @Override
-    public String getUsername() {
-        return email;
+    public String getPwd() {
+        return pwd;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
     }
 
     public String getRole() {
@@ -78,5 +81,13 @@ public class Customer implements UserDetails {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getCreateDt() {
+        return createDt;
+    }
+
+    public void setCreateDt(String createDt) {
+        this.createDt = createDt;
     }
 }
