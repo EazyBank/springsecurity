@@ -69,6 +69,36 @@ Important classes and Interfaces
 ![user management](assets/user-management.png)
 
 
+### Password Management
+
+
+#### Encoding
+Encoding refers to the process of converting data from one form to another and has nothing to do with cryptography
+
+it involves no secret and completely reversible
+
+Encoding can't be used for securing data. 
+
+Encoding algorithms include:
+ASCII, BASE64, UNICODE
+
+#### Encryption
+Its defined as the process of transforming data in such a way that guarantees confidentiality
+
+To achieve confidentiality, encryption requires the use of a secret which, in cryptographic terms, we call key.
+
+Encryption can be reversible by using decryption with the help of the key
+As long as the key is confidential, encryption can be considered as secured
+
+
+#### Hashing
+In hashing, data is converted to the hash value using some hashing function
+
+Data once hashed is non-reversible. One cannot determine the original data from a hash value generated 
+
+Given some arbitrary data along with the output of the hashing algorithm, one can verify whether the data matches the original input data without needing to see the original data
+
+
 
 
 
