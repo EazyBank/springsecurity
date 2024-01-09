@@ -28,17 +28,20 @@ public class SecurityConfig {
     private final AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter;
     private final AuthoritiesLoggingAtFilter authoritiesLoggingAtFilter;
     private final JWTTokenGeneratorFilter jwtTokenGeneratorFilter;
+    private final JWTTokenValidatorFilter jwtTokenValidatorFilter;
 
     public SecurityConfig(CsrfCookieFilter csrfCookieFilter,
                           RequestValidationFilter requestValidationFilter,
                           AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter,
                           AuthoritiesLoggingAtFilter authoritiesLoggingAtFilter,
-                          JWTTokenGeneratorFilter jwtTokenGeneratorFilter) {
+                          JWTTokenGeneratorFilter jwtTokenGeneratorFilter,
+                          JWTTokenValidatorFilter jwtTokenValidatorFilter) {
         this.csrfCookieFilter = csrfCookieFilter;
         this.requestValidationFilter = requestValidationFilter;
         this.authoritiesLoggingAfterFilter = authoritiesLoggingAfterFilter;
         this.authoritiesLoggingAtFilter = authoritiesLoggingAtFilter;
         this.jwtTokenGeneratorFilter = jwtTokenGeneratorFilter;
+        this.jwtTokenValidatorFilter = jwtTokenValidatorFilter;
     }
 
     @Bean
@@ -91,6 +94,7 @@ public class SecurityConfig {
         http.addFilterAt(authoritiesLoggingAtFilter, BasicAuthenticationFilter.class);
         http.addFilterAfter(csrfCookieFilter, BasicAuthenticationFilter.class);
         http.addFilterAfter(jwtTokenGeneratorFilter, BasicAuthenticationFilter.class);
+        http.addFilterBefore(jwtTokenValidatorFilter, BasicAuthenticationFilter.class);
 
         http.formLogin(Customizer.withDefaults());
         http.httpBasic(Customizer.withDefaults());
