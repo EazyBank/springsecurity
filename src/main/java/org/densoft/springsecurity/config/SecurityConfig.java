@@ -1,6 +1,7 @@
 package org.densoft.springsecurity.config;
 
 import org.densoft.springsecurity.filter.CsrfCookieFilter;
+import org.densoft.springsecurity.filter.RequestValidationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -19,13 +20,16 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Collections;
 import java.util.List;
 
+//@EnableWebSecurity(debug = true)
 @Configuration
 public class SecurityConfig {
 
     private final CsrfCookieFilter csrfCookieFilter;
+    private final RequestValidationFilter requestValidationFilter;
 
-    public SecurityConfig(CsrfCookieFilter csrfCookieFilter) {
+    public SecurityConfig(CsrfCookieFilter csrfCookieFilter, RequestValidationFilter requestValidationFilter) {
         this.csrfCookieFilter = csrfCookieFilter;
+        this.requestValidationFilter = requestValidationFilter;
     }
 
     @Bean
@@ -72,6 +76,7 @@ public class SecurityConfig {
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
         );
 
+        http.addFilterBefore(requestValidationFilter, BasicAuthenticationFilter.class);
         http.addFilterAfter(csrfCookieFilter, BasicAuthenticationFilter.class);
 
         http.formLogin(Customizer.withDefaults());
