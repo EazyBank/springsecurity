@@ -1,6 +1,9 @@
 package org.densoft.springsecurity.config;
 
+import org.densoft.springsecurity.filter.AuthoritiesLoggingAfterFilter;
+import org.densoft.springsecurity.filter.AuthoritiesLoggingAtFilter;
 import org.densoft.springsecurity.filter.CsrfCookieFilter;
+import org.densoft.springsecurity.filter.RequestValidationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -19,13 +22,20 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Collections;
 import java.util.List;
 
+//@EnableWebSecurity(debug = true)
 @Configuration
 public class SecurityConfig {
 
     private final CsrfCookieFilter csrfCookieFilter;
+    private final RequestValidationFilter requestValidationFilter;
+    private final AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter;
+    private final AuthoritiesLoggingAtFilter authoritiesLoggingAtFilter;
 
-    public SecurityConfig(CsrfCookieFilter csrfCookieFilter) {
+    public SecurityConfig(CsrfCookieFilter csrfCookieFilter, RequestValidationFilter requestValidationFilter, AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter, AuthoritiesLoggingAtFilter authoritiesLoggingAtFilter) {
         this.csrfCookieFilter = csrfCookieFilter;
+        this.requestValidationFilter = requestValidationFilter;
+        this.authoritiesLoggingAfterFilter = authoritiesLoggingAfterFilter;
+        this.authoritiesLoggingAtFilter = authoritiesLoggingAtFilter;
     }
 
     @Bean
@@ -48,10 +58,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(registry -> registry
-//                .requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT")
-//                .requestMatchers("/myBalance").hasAnyAuthority("VIEWACCOUNT", "VIEWBALANCE")
-//                .requestMatchers("/myLoans").hasAuthority("VIEWLOANS")
-//                .requestMatchers("/myCards").hasAuthority("VIEWCARDS")
 
                 .requestMatchers("/myAccount").hasRole("USER")
                 .requestMatchers("/myBalance").hasAnyRole("USER", "ADMIN")
@@ -76,6 +82,9 @@ public class SecurityConfig {
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
         );
 
+        http.addFilterBefore(requestValidationFilter, BasicAuthenticationFilter.class);
+        http.addFilterAfter(authoritiesLoggingAfterFilter, BasicAuthenticationFilter.class);
+        http.addFilterAt(authoritiesLoggingAtFilter, BasicAuthenticationFilter.class);
         http.addFilterAfter(csrfCookieFilter, BasicAuthenticationFilter.class);
 
         http.formLogin(Customizer.withDefaults());
