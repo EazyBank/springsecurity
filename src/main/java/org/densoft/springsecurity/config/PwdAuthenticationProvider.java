@@ -1,5 +1,6 @@
 package org.densoft.springsecurity.config;
 
+import org.densoft.springsecurity.model.Authority;
 import org.densoft.springsecurity.repository.CustomerRepository;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -10,7 +11,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 @Component
 public class PwdAuthenticationProvider implements AuthenticationProvider {
@@ -32,9 +34,13 @@ public class PwdAuthenticationProvider implements AuthenticationProvider {
             if (!passwordEncoder.matches(password, customer.getPwd()))
                 throw new BadCredentialsException("Invalid username or password");
 
-            return new UsernamePasswordAuthenticationToken(username, password, Collections.singleton(new SimpleGrantedAuthority(customer.getRole())));
+            return new UsernamePasswordAuthenticationToken(username, password, getGrantedAuthorities(customer.getAuthorities()));
 
         }).orElseThrow(() -> new BadCredentialsException("No user registered with provided details"));
+    }
+
+    public List<SimpleGrantedAuthority> getGrantedAuthorities(Set<Authority> authorities) {
+        return authorities.stream().map(authority -> new SimpleGrantedAuthority(authority.getName())).toList();
     }
 
     @Override

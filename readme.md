@@ -159,6 +159,29 @@ then configure in the securityfilterchain bean such as
     }
 ```
 
+## Authentication and Authorization
+
+| Aspect               | Authentication                                      | Authorization                                    |
+|----------------------|-----------------------------------------------------|--------------------------------------------------|
+| **Purpose**          | Verify users' identity for system access            | Verify users' authorities for resource access    |
+| **Sequence**         | Before Authorization                                | After Authentication                             |
+| **Input**            | User's login details                                | User's privilege or roles                        |
+| **Failure Response** | 401 error                                           | 403 error                                        |
+| **Example**          | Bank customer/employee proving identity for actions | Logged-in user's roles determine allowed actions |
+
+## Configuring Authorities
+
+* hasAuthority() -> Accepts a single authority for which the endpoint will be configured and user will be validated against
+  the single authority mentioned. Only users having the same authority can invoke the endpoint
+
+* hasAnyAuthority() -> Accepts multiple authorities for which the endpoint will be configured and user will be validated aganist the authorities mentioned. Only users having any of the configured authorities will invoke the endpoint
+
+* access() -> using Spring Expression Language (SpEL) it provides you unlimited opportunities of configuring authorities which are not possible with the above methods. We can use operators like OR, AND inside access() method.
+
+
+
+
+
 
 
 
