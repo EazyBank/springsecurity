@@ -1,5 +1,6 @@
 package org.densoft.springsecurity.config;
 
+import org.densoft.springsecurity.filter.AuthoritiesLoggingAfterFilter;
 import org.densoft.springsecurity.filter.CsrfCookieFilter;
 import org.densoft.springsecurity.filter.RequestValidationFilter;
 import org.springframework.context.annotation.Bean;
@@ -26,10 +27,12 @@ public class SecurityConfig {
 
     private final CsrfCookieFilter csrfCookieFilter;
     private final RequestValidationFilter requestValidationFilter;
+    private final AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter;
 
-    public SecurityConfig(CsrfCookieFilter csrfCookieFilter, RequestValidationFilter requestValidationFilter) {
+    public SecurityConfig(CsrfCookieFilter csrfCookieFilter, RequestValidationFilter requestValidationFilter, AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter) {
         this.csrfCookieFilter = csrfCookieFilter;
         this.requestValidationFilter = requestValidationFilter;
+        this.authoritiesLoggingAfterFilter = authoritiesLoggingAfterFilter;
     }
 
     @Bean
@@ -77,6 +80,7 @@ public class SecurityConfig {
         );
 
         http.addFilterBefore(requestValidationFilter, BasicAuthenticationFilter.class);
+        http.addFilterAfter(authoritiesLoggingAfterFilter, BasicAuthenticationFilter.class);
         http.addFilterAfter(csrfCookieFilter, BasicAuthenticationFilter.class);
 
         http.formLogin(Customizer.withDefaults());
