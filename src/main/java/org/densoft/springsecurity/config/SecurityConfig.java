@@ -1,9 +1,6 @@
 package org.densoft.springsecurity.config;
 
-import org.densoft.springsecurity.filter.AuthoritiesLoggingAfterFilter;
-import org.densoft.springsecurity.filter.AuthoritiesLoggingAtFilter;
-import org.densoft.springsecurity.filter.CsrfCookieFilter;
-import org.densoft.springsecurity.filter.RequestValidationFilter;
+import org.densoft.springsecurity.filter.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -30,12 +27,18 @@ public class SecurityConfig {
     private final RequestValidationFilter requestValidationFilter;
     private final AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter;
     private final AuthoritiesLoggingAtFilter authoritiesLoggingAtFilter;
+    private final JWTTokenGeneratorFilter jwtTokenGeneratorFilter;
 
-    public SecurityConfig(CsrfCookieFilter csrfCookieFilter, RequestValidationFilter requestValidationFilter, AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter, AuthoritiesLoggingAtFilter authoritiesLoggingAtFilter) {
+    public SecurityConfig(CsrfCookieFilter csrfCookieFilter,
+                          RequestValidationFilter requestValidationFilter,
+                          AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter,
+                          AuthoritiesLoggingAtFilter authoritiesLoggingAtFilter,
+                          JWTTokenGeneratorFilter jwtTokenGeneratorFilter) {
         this.csrfCookieFilter = csrfCookieFilter;
         this.requestValidationFilter = requestValidationFilter;
         this.authoritiesLoggingAfterFilter = authoritiesLoggingAfterFilter;
         this.authoritiesLoggingAtFilter = authoritiesLoggingAtFilter;
+        this.jwtTokenGeneratorFilter = jwtTokenGeneratorFilter;
     }
 
     @Bean
@@ -87,6 +90,7 @@ public class SecurityConfig {
         http.addFilterAfter(authoritiesLoggingAfterFilter, BasicAuthenticationFilter.class);
         http.addFilterAt(authoritiesLoggingAtFilter, BasicAuthenticationFilter.class);
         http.addFilterAfter(csrfCookieFilter, BasicAuthenticationFilter.class);
+        http.addFilterAfter(jwtTokenGeneratorFilter, BasicAuthenticationFilter.class);
 
         http.formLogin(Customizer.withDefaults());
         http.httpBasic(Customizer.withDefaults());
