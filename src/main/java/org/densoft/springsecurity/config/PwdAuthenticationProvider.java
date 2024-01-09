@@ -34,7 +34,9 @@ public class PwdAuthenticationProvider implements AuthenticationProvider {
             if (!passwordEncoder.matches(password, customer.getPwd()))
                 throw new BadCredentialsException("Invalid username or password");
 
-            return new UsernamePasswordAuthenticationToken(username, password, getGrantedAuthorities(customer.getAuthorities()));
+            List<SimpleGrantedAuthority> simpleGrantedAuthorities = getGrantedAuthorities(customer.getAuthorities());
+
+            return new UsernamePasswordAuthenticationToken(username, password, simpleGrantedAuthorities);
 
         }).orElseThrow(() -> new BadCredentialsException("No user registered with provided details"));
     }

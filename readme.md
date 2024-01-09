@@ -171,14 +171,54 @@ then configure in the securityfilterchain bean such as
 
 ## Configuring Authorities
 
-* hasAuthority() -> Accepts a single authority for which the endpoint will be configured and user will be validated against
+* hasAuthority() -> Accepts a single authority for which the endpoint will be configured and user will be validated
+  against
   the single authority mentioned. Only users having the same authority can invoke the endpoint
 
-* hasAnyAuthority() -> Accepts multiple authorities for which the endpoint will be configured and user will be validated aganist the authorities mentioned. Only users having any of the configured authorities will invoke the endpoint
+* hasAnyAuthority() -> Accepts multiple authorities for which the endpoint will be configured and user will be validated
+  aganist the authorities mentioned. Only users having any of the configured authorities will invoke the endpoint
 
-* access() -> using Spring Expression Language (SpEL) it provides you unlimited opportunities of configuring authorities which are not possible with the above methods. We can use operators like OR, AND inside access() method.
+* access() -> using Spring Expression Language (SpEL) it provides you unlimited opportunities of configuring authorities
+  which are not possible with the above methods. We can use operators like OR, AND inside access() method.
 
+## Authority vs Role
 
+| Term            | Definition                                  | Example                |
+|-----------------|---------------------------------------------|------------------------|
+| **Authority**   | Individual privilege or action              | VIEWACCOUNT, VIEWCARDS |
+| **Description** | Restricts access in a fine-grained manner   |                        |
+| **Role**        | Group of privileges/actions                 | ROLE_ADMIN, ROLE_USER  |
+| **Description** | Restricts access in a coarse-grained manner |                        |
+
+The names of authorities /roles are arbitrary in nature, and these names can be customized as per the business
+requirement
+Roles are also represented using the same contract GrantedAuthority in spring security,
+When defining a role, its name should start with ROLE_  prefix, this prefix specifies the difference between a role and
+an authority
+
+### Role Configuration
+
+In Spring Security, you can configure role requirements for endpoints using the following methods:
+
+- **hasRole()**
+  - Accepts a single role name for configuring the endpoint.
+  - Users will be validated against the specified role.
+  - Only users with the exact role configured can invoke the endpoint.
+
+- **hasAnyRole()**
+  - Accepts multiple roles for configuring the endpoint.
+  - Users will be validated against any of the specified roles.
+  - Allows access for users with any of the configured roles.
+
+- **access()**
+  - Utilizes Spring Expression Language (SpEL) to provide unlimited possibilities for role configuration.
+  - Allows the use of operators like OR and AND inside the access() method.
+  - Offers flexibility beyond the constraints of hasRole() and hasAnyRole().
+
+**Note:**
+- The `ROLE_` prefix is used when configuring roles in the database.
+- When configuring roles, use only the role name without the prefix.
+- The `access()` method can be employed not only for configuring authorization based on authority or role but also for handling special requirements. For instance, access can be configured based on the user's country or the current time/date.
 
 
 
