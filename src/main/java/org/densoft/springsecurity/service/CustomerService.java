@@ -2,6 +2,8 @@ package org.densoft.springsecurity.service;
 
 import org.densoft.springsecurity.model.Customer;
 import org.densoft.springsecurity.repository.CustomerRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +24,15 @@ public class CustomerService {
         });
 
 
-        newCustomer.setPassword(passwordEncoder.encode(newCustomer.getPassword()));
+        newCustomer.setPwd(passwordEncoder.encode(newCustomer.getPwd()));
 
         customerRepository.save(newCustomer);
+    }
+
+    public Customer getUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        return customerRepository.findByEmail(username).orElseThrow(() -> new RuntimeException("no user found"));
     }
 }
