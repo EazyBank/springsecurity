@@ -1,9 +1,6 @@
 package org.densoft.springsecurity.config;
 
-import org.densoft.springsecurity.filter.AuthoritiesLoggingAfterFilter;
-import org.densoft.springsecurity.filter.AuthoritiesLoggingAtFilter;
-import org.densoft.springsecurity.filter.CsrfCookieFilter;
-import org.densoft.springsecurity.filter.RequestValidationFilter;
+import org.densoft.springsecurity.filter.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -22,7 +19,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Collections;
 import java.util.List;
 
-//@EnableWebSecurity(debug = true)
 @Configuration
 public class SecurityConfig {
 
@@ -30,12 +26,21 @@ public class SecurityConfig {
     private final RequestValidationFilter requestValidationFilter;
     private final AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter;
     private final AuthoritiesLoggingAtFilter authoritiesLoggingAtFilter;
+    private final JWTTokenGeneratorFilter jwtTokenGeneratorFilter;
+    private final JWTTokenValidatorFilter jwtTokenValidatorFilter;
 
-    public SecurityConfig(CsrfCookieFilter csrfCookieFilter, RequestValidationFilter requestValidationFilter, AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter, AuthoritiesLoggingAtFilter authoritiesLoggingAtFilter) {
+    public SecurityConfig(CsrfCookieFilter csrfCookieFilter,
+                          RequestValidationFilter requestValidationFilter,
+                          AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter,
+                          AuthoritiesLoggingAtFilter authoritiesLoggingAtFilter,
+                          JWTTokenGeneratorFilter jwtTokenGeneratorFilter,
+                          JWTTokenValidatorFilter jwtTokenValidatorFilter) {
         this.csrfCookieFilter = csrfCookieFilter;
         this.requestValidationFilter = requestValidationFilter;
         this.authoritiesLoggingAfterFilter = authoritiesLoggingAfterFilter;
         this.authoritiesLoggingAtFilter = authoritiesLoggingAtFilter;
+        this.jwtTokenGeneratorFilter = jwtTokenGeneratorFilter;
+        this.jwtTokenValidatorFilter = jwtTokenValidatorFilter;
     }
 
     @Bean
@@ -50,6 +55,7 @@ public class SecurityConfig {
         corsConfiguration.setAllowedMethods(List.of("GET", "POST"));
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
+        corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
@@ -57,20 +63,20 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(registry -> registry
 
+        http.authorizeHttpRequests(registry -> registry
                 .requestMatchers("/myAccount").hasRole("USER")
                 .requestMatchers("/myBalance").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/myLoans").hasRole("USER")
                 .requestMatchers("/myCards").hasRole("USER")
-
                 .requestMatchers("/user").authenticated()
                 .requestMatchers("/notices", "/contact", "/register").permitAll()
         );
+
         http.cors(Customizer.withDefaults()); // by default, uses a Bean by the name of corsConfigurationSource
 
-        http.securityContext(httpSecuritySecurityContextConfigurer -> httpSecuritySecurityContextConfigurer.requireExplicitSave(false));
-        http.sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
+        // do not generate JSESSIONIDS and http sessions
+        http.sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         // csrf token config
         CsrfTokenRequestAttributeHandler requestAttributeHandler = new CsrfTokenRequestAttributeHandler();
@@ -86,6 +92,8 @@ public class SecurityConfig {
         http.addFilterAfter(authoritiesLoggingAfterFilter, BasicAuthenticationFilter.class);
         http.addFilterAt(authoritiesLoggingAtFilter, BasicAuthenticationFilter.class);
         http.addFilterAfter(csrfCookieFilter, BasicAuthenticationFilter.class);
+        http.addFilterAfter(jwtTokenGeneratorFilter, BasicAuthenticationFilter.class);
+        http.addFilterBefore(jwtTokenValidatorFilter, BasicAuthenticationFilter.class);
 
         http.formLogin(Customizer.withDefaults());
         http.httpBasic(Customizer.withDefaults());
