@@ -19,7 +19,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Collections;
 import java.util.List;
 
-//@EnableWebSecurity(debug = true)
 @Configuration
 public class SecurityConfig {
 
@@ -64,16 +63,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(registry -> registry
 
+        http.authorizeHttpRequests(registry -> registry
                 .requestMatchers("/myAccount").hasRole("USER")
                 .requestMatchers("/myBalance").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/myLoans").hasRole("USER")
                 .requestMatchers("/myCards").hasRole("USER")
-
                 .requestMatchers("/user").authenticated()
                 .requestMatchers("/notices", "/contact", "/register").permitAll()
         );
+
         http.cors(Customizer.withDefaults()); // by default, uses a Bean by the name of corsConfigurationSource
 
         // do not generate JSESSIONIDS and http sessions
