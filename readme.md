@@ -201,24 +201,56 @@ an authority
 In Spring Security, you can configure role requirements for endpoints using the following methods:
 
 - **hasRole()**
-  - Accepts a single role name for configuring the endpoint.
-  - Users will be validated against the specified role.
-  - Only users with the exact role configured can invoke the endpoint.
+    - Accepts a single role name for configuring the endpoint.
+    - Users will be validated against the specified role.
+    - Only users with the exact role configured can invoke the endpoint.
 
 - **hasAnyRole()**
-  - Accepts multiple roles for configuring the endpoint.
-  - Users will be validated against any of the specified roles.
-  - Allows access for users with any of the configured roles.
+    - Accepts multiple roles for configuring the endpoint.
+    - Users will be validated against any of the specified roles.
+    - Allows access for users with any of the configured roles.
 
 - **access()**
-  - Utilizes Spring Expression Language (SpEL) to provide unlimited possibilities for role configuration.
-  - Allows the use of operators like OR and AND inside the access() method.
-  - Offers flexibility beyond the constraints of hasRole() and hasAnyRole().
+    - Utilizes Spring Expression Language (SpEL) to provide unlimited possibilities for role configuration.
+    - Allows the use of operators like OR and AND inside the access() method.
+    - Offers flexibility beyond the constraints of hasRole() and hasAnyRole().
 
 **Note:**
+
 - The `ROLE_` prefix is used when configuring roles in the database.
 - When configuring roles, use only the role name without the prefix.
-- The `access()` method can be employed not only for configuring authorization based on authority or role but also for handling special requirements. For instance, access can be configured based on the user's country or the current time/date.
+- The `access()` method can be employed not only for configuring authorization based on authority or role but also for
+  handling special requirements. For instance, access can be configured based on the user's country or the current
+  time/date.
+
+## Method Level security
+
+Method level security allows applying the authorization rules at any layer of the application like in service layer or
+repository layer
+Method level security can be enabled using annotation @EnableMethodSecurity on the configuration class
+
+Method level security provides the below approaches to apply the authorization rules and executing your business logic
+
+* Invocation authorization -> validates if someone can invoke a method or not based on their roles or authorities
+* Filtering authorization -> validates what a method can receive through its parameters and what the invoker can receive
+  back from the method post business logic exception
+
+Spring security will use the aspects from AOP module and have the interceptors in between the method invocation to apply
+the authorization rules configured
+
+Method level security offers below 3 different styles for configuring the authorization rules on top of the methods
+
+* The prePostEnabled property enables SpringSecurity @PreAuthorize & @PostAuthorize annotations
+* The securedEnabled property enables @Secured annotation
+* The jsr250Enabled property enables @RoleAllowed annotation
+
+![method level security](assets/method-level_sec.png)
+
+@Secured and @RoleAllowed are less powerful compared to @PreAuthorize and @PostAuthorize
+
+
+
+
 
 
 
