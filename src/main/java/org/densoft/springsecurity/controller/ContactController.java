@@ -2,6 +2,7 @@ package org.densoft.springsecurity.controller;
 
 import org.densoft.springsecurity.model.Contact;
 import org.densoft.springsecurity.service.ContactService;
+import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ public class ContactController {
     }
 
     @GetMapping("/contact")
+//    @PreFilter("filterObject.contactName != 'Test'")
     public Contact saveContactInquiryDetails(@RequestBody Contact contact) {
         return contactService.saveContactInquiryDetails(contact);
     }
