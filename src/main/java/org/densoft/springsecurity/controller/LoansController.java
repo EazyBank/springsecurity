@@ -2,6 +2,7 @@ package org.densoft.springsecurity.controller;
 
 import org.densoft.springsecurity.model.Loan;
 import org.densoft.springsecurity.service.LoansService;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ public class LoansController {
     }
 
     @GetMapping("/myLoans")
+    @PostAuthorize("hasRole('USER')")
     public List<Loan> getLoans(@RequestParam int id) {
         return loansService.getLoans(id);
     }

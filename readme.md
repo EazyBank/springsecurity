@@ -248,6 +248,20 @@ Method level security offers below 3 different styles for configuring the author
 
 @Secured and @RoleAllowed are less powerful compared to @PreAuthorize and @PostAuthorize
 
+@PreFilter
+used in a scenario where we dont need to control the invocation of the method but we want to make sure that the parameters sent are recieved to/from the method need to follow authorization rules or filtering cretria, the we can consider filtering
+
+For filtering the parameters before calling the method we can use PreFilter annotation,  
+But please note that the filter object should be of type Collection interface
+
+![prefilter](assets/prefilter.png)
+
+The @PostFilter can also be used on spring Data repository methods as well to filter any unwanted data coming from the database
+
+
+
+
+
 
 
 
