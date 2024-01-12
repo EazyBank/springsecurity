@@ -38,7 +38,9 @@ public class PwdAuthenticationProvider implements AuthenticationProvider {
 
             return new UsernamePasswordAuthenticationToken(username, password, simpleGrantedAuthorities);
 
-        }).orElseThrow(() -> new BadCredentialsException("No user registered with provided details"));
+        }).orElseThrow(() -> {
+            return new BadCredentialsException("No user registered with provided details");
+        });
     }
 
     public List<SimpleGrantedAuthority> getGrantedAuthorities(Set<Authority> authorities) {
