@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Configuration
+@EnableWebSecurity(debug = true)
 public class SecurityConfig {
 
     private final CsrfCookieFilter csrfCookieFilter;
@@ -84,9 +86,11 @@ public class SecurityConfig {
 
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer
                 .csrfTokenRequestHandler(requestAttributeHandler)
-                .ignoringRequestMatchers("/contact", "/register")
+                .ignoringRequestMatchers("/contact", "/register", "/login")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
         );
+
+//        http.csrf(AbstractHttpConfigurer::disable);
 
         http.addFilterBefore(requestValidationFilter, BasicAuthenticationFilter.class);
         http.addFilterAfter(authoritiesLoggingAfterFilter, BasicAuthenticationFilter.class);
