@@ -18,11 +18,6 @@ public class LoginController {
         this.customerService = customerService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody Customer customer) {
-        customerService.saveUser(customer);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
-    }
 
     @GetMapping("/user")
     public Customer getUserDetails() {

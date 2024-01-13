@@ -19,8 +19,8 @@ public class LoansController {
     }
 
     @GetMapping("/myLoans")
-    @PostAuthorize("hasRole('USER')")
-    public List<Loan> getLoans(@RequestParam int id) {
-        return loansService.getLoans(id);
+    public List<Loan> getLoans(@RequestParam String email) {
+        System.out.println("here is email: "+email);
+        return loansService.getLoans(email);
     }
 }

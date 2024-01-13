@@ -1,21 +1,21 @@
 package org.densoft.springsecurity.service;
 
 import org.densoft.springsecurity.model.Notice;
-import org.densoft.springsecurity.repository.NoticeRepository;
+import org.densoft.springsecurity.repository.NoticeRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class NoticeService {
-    private final NoticeRepository noticeRepository;
+    private final NoticeRepo noticeRepo;
 
-    public NoticeService(NoticeRepository noticeRepository) {
-        this.noticeRepository = noticeRepository;
+    public NoticeService(NoticeRepo noticeRepo) {
+        this.noticeRepo = noticeRepo;
     }
 
 
     public List<Notice> getNotices() {
-        return noticeRepository.findAllActiveNotices();
+        return noticeRepo.findAllActiveNotices();
     }
 }

@@ -18,7 +18,7 @@ public class BalanceController {
     }
 
     @GetMapping("/myBalance")
-    public List<AccountTransaction> getBalanceDetails(@RequestParam int id) {
-        return accountTransactionsService.getAccountTransactions(id);
+    public List<AccountTransaction> getBalanceDetails(@RequestParam String email) {
+        return accountTransactionsService.getAccountTransactions(email);
     }
 }

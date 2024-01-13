@@ -1,7 +1,7 @@
 package org.densoft.springsecurity.service;
 
 import org.densoft.springsecurity.model.Contact;
-import org.densoft.springsecurity.repository.ContactRepository;
+import org.densoft.springsecurity.repository.ContactRepo;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -10,16 +10,16 @@ import java.util.Random;
 @Service
 public class ContactService {
 
-    private final ContactRepository contactRepository;
+    private final ContactRepo contactRepo;
 
-    public ContactService(ContactRepository contactRepository) {
-        this.contactRepository = contactRepository;
+    public ContactService(ContactRepo contactRepo) {
+        this.contactRepo = contactRepo;
     }
 
     public Contact saveContactInquiryDetails(Contact contact) {
         contact.setContactId(getServiceReqNumber());
         contact.setCreateDt(new Date(System.currentTimeMillis()));
-        return contactRepository.save(contact);
+        return contactRepo.save(contact);
     }
 
     private String getServiceReqNumber() {
