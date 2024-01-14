@@ -17,7 +17,7 @@ public class AccountController {
     }
 
     @GetMapping("/myAccount")
-    public Account getAccountDetails(@RequestParam int id) {
-        return accountService.getAccount(id);
+    public Account getAccountDetails(@RequestParam String email) {
+        return accountService.getAccount(email);
     }
 }

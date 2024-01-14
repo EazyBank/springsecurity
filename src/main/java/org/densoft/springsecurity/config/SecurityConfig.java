@@ -1,14 +1,13 @@
 package org.densoft.springsecurity.config;
 
-import org.densoft.springsecurity.filter.*;
+import org.densoft.springsecurity.filter.CsrfCookieFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -25,36 +24,16 @@ import java.util.List;
 public class SecurityConfig {
 
     private final CsrfCookieFilter csrfCookieFilter;
-    private final RequestValidationFilter requestValidationFilter;
-    private final AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter;
-    private final AuthoritiesLoggingAtFilter authoritiesLoggingAtFilter;
-    private final JWTTokenGeneratorFilter jwtTokenGeneratorFilter;
-    private final JWTTokenValidatorFilter jwtTokenValidatorFilter;
 
-    public SecurityConfig(CsrfCookieFilter csrfCookieFilter,
-                          RequestValidationFilter requestValidationFilter,
-                          AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter,
-                          AuthoritiesLoggingAtFilter authoritiesLoggingAtFilter,
-                          JWTTokenGeneratorFilter jwtTokenGeneratorFilter,
-                          JWTTokenValidatorFilter jwtTokenValidatorFilter) {
+    public SecurityConfig(CsrfCookieFilter csrfCookieFilter) {
         this.csrfCookieFilter = csrfCookieFilter;
-        this.requestValidationFilter = requestValidationFilter;
-        this.authoritiesLoggingAfterFilter = authoritiesLoggingAfterFilter;
-        this.authoritiesLoggingAtFilter = authoritiesLoggingAtFilter;
-        this.jwtTokenGeneratorFilter = jwtTokenGeneratorFilter;
-        this.jwtTokenValidatorFilter = jwtTokenValidatorFilter;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(List.of("http://localhost:4200"));
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST"));
+        corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
         corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
@@ -65,6 +44,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConvertor());
 
         http.authorizeHttpRequests(registry -> registry
                 .requestMatchers("/myAccount").hasRole("USER")
@@ -90,17 +72,30 @@ public class SecurityConfig {
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
         );
 
-//        http.csrf(AbstractHttpConfigurer::disable);
-
-        http.addFilterBefore(requestValidationFilter, BasicAuthenticationFilter.class);
-        http.addFilterAfter(authoritiesLoggingAfterFilter, BasicAuthenticationFilter.class);
-        http.addFilterAt(authoritiesLoggingAtFilter, BasicAuthenticationFilter.class);
         http.addFilterAfter(csrfCookieFilter, BasicAuthenticationFilter.class);
-        http.addFilterAfter(jwtTokenGeneratorFilter, BasicAuthenticationFilter.class);
-        http.addFilterBefore(jwtTokenValidatorFilter, BasicAuthenticationFilter.class);
 
-        http.formLogin(Customizer.withDefaults());
-        http.httpBasic(Customizer.withDefaults());
+        //        http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
+
+        http.exceptionHandling(configurer -> configurer.accessDeniedHandler((request, response, accessDeniedException) -> {
+            System.out.println("access denied handler");
+            System.out.println(accessDeniedException.getMessage());
+            accessDeniedException.printStackTrace();
+        }).authenticationEntryPoint((request, response, authException) -> {
+            System.out.println("authentication entry point");
+            System.out.println(authException.getMessage());
+            authException.printStackTrace();
+        }));
+
+        http.oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer ->
+                httpSecurityOAuth2ResourceServerConfigurer.jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter)).accessDeniedHandler((request, response, accessDeniedException) -> {
+                    System.out.println("access denied handler2");
+                    System.out.println(accessDeniedException.getMessage());
+                    accessDeniedException.printStackTrace();
+                }).authenticationEntryPoint((request, response, authException) -> {
+                    System.out.println("authentication entry point2");
+                    System.out.println(authException.getMessage());
+                    authException.printStackTrace();
+                }));
         return http.build();
     }
 }

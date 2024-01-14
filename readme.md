@@ -258,6 +258,25 @@ But please note that the filter object should be of type Collection interface
 
 The @PostFilter can also be used on spring Data repository methods as well to filter any unwanted data coming from the database
 
+## OAUTH2
+
+OAuth stands for open authorization -> its a free and open protocol, built on IETF standards and licenses from the Open web Foundation
+
+Oauth 2.0 is a security standard where you give one application permission to access your data in another application 
+The steps to grant permission or consent are referred to as authorization or even delegated authorization
+You authorize one application to access your data, or use features in another application on your behalf, without giving them your password
+
+in many ways you can think of the OAuth token as a "access card" at any office/hotel. These tokens provides limited access to someone, without handling over full control in the form of the master key
+
+The Oauth framework specfies several grant types for different use cases as well as framework for creating new grant types
+
+* Authorization code
+* PKCE
+* Client Credentials
+* Device token
+* Refresh token
+* Implicit flow (Legacy)
+* Password Grant (Legacy)
 
 
 

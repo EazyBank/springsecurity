@@ -1,7 +1,8 @@
 package org.densoft.springsecurity.service;
 
 import org.densoft.springsecurity.model.Loan;
-import org.densoft.springsecurity.repository.LoanRepository;
+import org.densoft.springsecurity.repository.CustomerRepo;
+import org.densoft.springsecurity.repository.LoanRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,13 +10,17 @@ import java.util.List;
 @Service
 public class LoansService {
 
-    private final LoanRepository loanRepository;
+    private final LoanRepo loanRepo;
+    private final CustomerRepo customerRepo;
 
-    public LoansService(LoanRepository loanRepository) {
-        this.loanRepository = loanRepository;
+    public LoansService(LoanRepo loanRepo, CustomerRepo customerRepo) {
+        this.loanRepo = loanRepo;
+        this.customerRepo = customerRepo;
     }
 
-    public List<Loan> getLoans(int customerId) {
-        return loanRepository.findByCustomerIdOrderByStartDtDesc(customerId);
+    public List<Loan> getLoans(String email) {
+        return customerRepo.findByEmail(email)
+                .map(customer -> loanRepo.findByCustomerIdOrderByStartDtDesc(customer.getId()))
+                .orElseThrow(() -> new RuntimeException("no customer found with the email:  " + email));
     }
 }
